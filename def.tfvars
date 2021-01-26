@@ -1,2 +1,2 @@
 location = "uksouth"
-prefix = "mike"
+prefix = "mike2"
