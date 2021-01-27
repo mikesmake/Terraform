@@ -1,10 +1,3 @@
-  backend "azurerm" {
-    resource_group_name   = "core"
-    storage_account_name  = "terrastatemike"
-    container_name        = "tstate"
-    key                   = "tN5yHfDanFeBHa8xtX5nkWRN7KcrwuKotryYvdZs7jXZqSDpj9YwZjf59zamzVp5bFZYcNHUz/TAsWHMblhcQg=="
-}
-
 terraform {
   required_providers {
     azurerm = {
