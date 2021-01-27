@@ -8,12 +8,12 @@ provider "azurerm" {
 data "azurerm_client_config" "current" {}
 # Create our Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "var.name-app01"
+  name     = "${var.name}-app01"
   location = "UK South"
 }
 # Create our Virtual Network
 resource "azurerm_virtual_network" "vnet" {
-  name                = "var.name-vnet"
+  name                = "${var.name}-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -27,7 +27,7 @@ resource "azurerm_subnet" "sn" {
 }
 # Create our Azure Storage Account
 resource "azurerm_storage_account" "whereisthis" {
-  name                     = "var.name"
+  name                     = "${var.name}"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"
@@ -35,7 +35,7 @@ resource "azurerm_storage_account" "whereisthis" {
 }
 # Create our vNIC for our VM and assign it to our Virtual Machines Subnet
 resource "azurerm_network_interface" "vmnic" {
-  name                = "var.namevm01nic"
+  name                = "${var.name}vm01nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   
@@ -47,7 +47,7 @@ resource "azurerm_network_interface" "vmnic" {
 }
 # Create our Virtual Machine - Jonnychipz-VM01
 resource "azurerm_virtual_machine" "VMWhere" {
-  name                  = "var.name-vm01"
+  name                  = "${var.name}-vm01"
   location              = azurerm_resource_group.rg.location
   resource_group_name   = azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.vmnic.id]
@@ -59,13 +59,13 @@ resource "azurerm_virtual_machine" "VMWhere" {
     version   = "latest"
   }
   storage_os_disk {
-    name              = "var.namevm01os"
+    name              = "${var.name}vm01os"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
   os_profile {
-    computer_name      = "var.namevm01"
+    computer_name      = "${var.name}vm01"
     admin_username     = "Mike"
     admin_password     = "StrongPass1"
   }
