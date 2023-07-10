@@ -1,0 +1,21 @@
+stages:
+  - stage: build
+    jobs:
+      - job: buildTerraform
+        pool:
+          vmImage: windows-latest
+        steps:
+        - checkout: self
+        - task: CopyFiles@2
+          inputs:
+            Contents: |
+              **.tf
+            TargetFolder: '$(build.artifactstagingdirectory)'
+            CleanTargetFolder: true
+          displayName: 'Copy Terraform files'        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)'
+            artifact: 'drop'
+            publishLocation: 'pipeline'
+          displayName: 'Publish Artifact'      

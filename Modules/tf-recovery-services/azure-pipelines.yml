@@ -1,0 +1,86 @@
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: windows-2022
+  steps:
+  - checkout: self
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Write your PowerShell commands here.
+        
+        Write-Host "Hello World"
+        
+        Write-Host "Install Snyk"
+        
+        npm install -g snyk
+        
+        npm install -g snyk-to-html
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+    inputs:
+      Contents: >-
+        outputs.tf
+
+        main.tf
+
+        variables.tf
+
+        readme.md
+      TargetFolder: $(build.artifactstagingdirectory)
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Write your PowerShell commands here.
+        
+        Write-Host "Hello World"
+        
+        Write-Host "path " $(build.artifactstagingdirectory)\main.tf
+        
+        snyk auth $(SNYK_TOKEN)
+        
+        cd C:\npm\prefix\
+        
+        snyk iac test $(build.artifactstagingdirectory)\ --severity-threshold=high
+
+  - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+    displayName: 'Use Terraform $(TerraformVersion)'
+    inputs:
+      terraformVersion: '1.0.11'
+
+  - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+    displayName: 'Terraform : azurerm init'
+    inputs:
+      workingDirectory: '$(build.artifactstagingdirectory)'
+      backendServiceArm: 'AzureDevOps-Sub-MPSEnterpriseDev-Infra As Code'
+      backendAzureRmResourceGroupName: 'rg-SharedServices-Test'
+      backendAzureRmStorageAccountName: validateterraformsate
+      backendAzureRmContainerName: tfstate
+      backendAzureRmKey: tfrecoveryser.tfstate
+
+  - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV2@2
+    displayName: 'Terraform : azurerm validate'
+    inputs:
+      command: validate
+      workingDirectory: '$(build.artifactstagingdirectory)'
+      commandOptions: 
+
+  - task: DeleteFiles@1
+    displayName: 'Delete files from $(build.artifactstagingdirectory)'
+    inputs:
+      SourceFolder: '$(build.artifactstagingdirectory)'
+      Contents: |
+        .terraform.lock.hcl
+        .terraform
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+...

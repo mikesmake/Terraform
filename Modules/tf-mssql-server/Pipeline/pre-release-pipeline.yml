@@ -1,0 +1,14 @@
+name: 1.0$(Rev:.r)
+
+trigger:
+  - develop
+
+variables:
+  - template: variables-pipeline.yml
+
+stages:
+  - template: Stages/build.yml
+  - template: Stages/publish.yml
+    parameters:
+      feedToPublish: "Terraform-Modules-Prerelease"
+      feedVersion: "patch" # ##### This is key ####### options are here (major, minor, patch)

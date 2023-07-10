@@ -1,0 +1,5 @@
+variables:
+- name: BuildConfiguration
+  value: Release
+- name: TerraformVersion
+  value: 1.3.4
